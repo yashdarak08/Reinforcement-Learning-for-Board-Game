@@ -1,0 +1,11 @@
+ppo:
+  num_updates: 1000
+  timesteps_per_update: 200
+  learning_rate: 0.0003
+  gamma: 0.99
+  eps_clip: 0.2
+  entropy_coef: 0.01
+  value_coef: 0.5
+  max_grad_norm: 0.5
+  num_steps: 128
+  
