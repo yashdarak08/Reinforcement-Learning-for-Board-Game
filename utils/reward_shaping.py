@@ -2,28 +2,22 @@ import numpy as np
 
 class RewardShaper:
     """
-    A configurable reward shaping class tailored for different board game environments.
+    A configurable reward shaping class for different board game environments.
     
     For Monopoly:
-      - Assumes the state vector layout:
-          index 0: Board position (assumed cyclic; bonus for passing "Go")
-          index 1: Cash amount
-          indices 2 to N: Property values or ownership indicators
-      - The shaping encourages improvements in cash, acquiring properties, and favorable board positions.
+      - Rewards for cash improvements, property acquisition, and strategic positions
     
     For Catan:
-      - Assumes the state vector layout:
-          indices 0-4: Resource counts (e.g., wood, brick, sheep, wheat, ore)
-          index 5: Progress metric (could be development cards, roads built, etc.)
-          remaining indices: Other strategic factors
-      - The shaping rewards increased resource availability and progress.
-    
-    The class also supports a debug mode to print detailed shaping information.
+      - Rewards for resource collection, building structures, and progress toward victory
     """
     
     def __init__(self, env_type, debug=False):
         self.env_type = env_type.lower()
         self.debug = debug
+        
+        # Previous state cache for tracking progress (useful for some metrics)
+        self.previous_states = []
+        self.max_history = 5  # Keep track of last 5 states
 
     def shape_reward(self, state, action, reward, next_state):
         """
@@ -31,7 +25,7 @@ class RewardShaper:
         
         Parameters:
           state (np.ndarray): The current state vector.
-          action (int): The action taken (not directly used in this heuristic, but available for extensions).
+          action (int): The action taken.
           reward (float): The original environment reward.
           next_state (np.ndarray): The state after taking the action.
           
@@ -39,54 +33,79 @@ class RewardShaper:
           float: The modified (shaped) reward.
         """
         shaped_reward = reward
-        details = {}
+        details = {"original_reward": reward}
 
         if self.env_type == "monopoly":
-            # Heuristic assumptions for Monopoly:
-            # - Board position: If the agent passes a certain point (e.g., “Go”), it may get a bonus.
-            # - Cash improvement: Increase in cash yields a small bonus.
-            # - Property acquisition: Increase in property-related features yields a significant bonus.
+            # Calculate improvements
             cash_improvement = next_state[1] - state[1]
-            # Assume board positions are cyclic with a wrap-around at 100.
-            if next_state[0] >= state[0]:
-                position_improvement = next_state[0] - state[0]
-            else:
-                position_improvement = (next_state[0] + 100) - state[0]
-            # Count how many property indicators (indices 2 onward) have increased.
-            property_gain = sum(1 for i in range(2, len(state)) if next_state[i] > state[i])
             
-            # Calculate bonus with tuned coefficients:
-            bonus = (0.01 * cash_improvement) + (0.1 * position_improvement) + (0.5 * property_gain)
+            # Calculate property acquisition (counting newly owned properties)
+            property_before = np.sum(state[2:10])
+            property_after = np.sum(next_state[2:10])
+            property_gain = property_after - property_before
+            
+            # Handle board position (track completing a lap)
+            position_before = state[0]
+            position_after = next_state[0]
+            passed_go = position_after < position_before and position_after != 10  # Not jail
+            
+            # Penalties and bonuses
+            cash_bonus = 0.05 * cash_improvement if cash_improvement > 0 else 0.02 * cash_improvement
+            property_bonus = 1.0 * property_gain if property_gain > 0 else 0
+            position_bonus = 0.5 if passed_go else 0
+            
+            # Calculate total bonus
+            bonus = cash_bonus + property_bonus + position_bonus
             shaped_reward += bonus
             
-            details['cash_improvement'] = cash_improvement
-            details['position_improvement'] = position_improvement
-            details['property_gain'] = property_gain
-            details['bonus'] = bonus
+            details.update({
+                'cash_improvement': cash_improvement,
+                'property_gain': property_gain,
+                'passed_go': passed_go,
+                'bonus': bonus
+            })
 
         elif self.env_type == "catan":
-            # Heuristic assumptions for Catan:
-            # - Resource improvement: Increase in the total count of resources (indices 0-4).
-            # - Progress improvement: Increase in progress-related metric (index 5).
-            resource_improvement = np.sum(next_state[:5]) - np.sum(state[:5])
-            progress_improvement = next_state[5] - state[5]
+            # Calculate resource improvements
+            resource_before = np.sum(state[:5])
+            resource_after = np.sum(next_state[:5])
+            resource_gain = resource_after - resource_before
             
-            # Calculate bonus with tuned coefficients:
-            bonus = (0.1 * resource_improvement) + (0.5 * progress_improvement)
+            # Calculate building improvements
+            settlements_diff = next_state[5] - state[5]
+            cities_diff = next_state[6] - state[6]
+            roads_diff = next_state[7] - state[7]
+            
+            # Calculate victory point progress
+            vp_gain = next_state[9] - state[9]
+            
+            # Apply bonuses
+            resource_bonus = 0.05 * resource_gain
+            building_bonus = 0.2 * (settlements_diff + 2 * cities_diff + 0.1 * roads_diff)
+            vp_bonus = 1.0 * vp_gain if vp_gain > 0 else 0
+            
+            # Total bonus
+            bonus = resource_bonus + building_bonus + vp_bonus
             shaped_reward += bonus
             
-            details['resource_improvement'] = resource_improvement
-            details['progress_improvement'] = progress_improvement
-            details['bonus'] = bonus
-
+            details.update({
+                'resource_gain': resource_gain,
+                'settlements_diff': settlements_diff,
+                'cities_diff': cities_diff,
+                'vp_gain': vp_gain,
+                'bonus': bonus
+            })
         else:
-            # Default reward shaping if the environment type is unknown.
-            bonus = 0.0
-            if next_state[0] > 5:
-                bonus += 0.5
+            # Default shaping for unknown environments
+            bonus = 0.1 if reward > 0 else 0
             shaped_reward += bonus
             details['bonus'] = bonus
 
+        # Store state in history
+        self.previous_states.append(state.copy())
+        if len(self.previous_states) > self.max_history:
+            self.previous_states.pop(0)
+            
         if self.debug:
             print("Reward Shaping Debug Info:", details)
         
@@ -95,7 +114,6 @@ class RewardShaper:
 def shape_reward(state, action, reward, next_state, env_type="default", debug=False):
     """
     A functional interface for reward shaping.
-    This function wraps around the RewardShaper class to allow one-line usage.
     
     Parameters:
       state (np.ndarray): The current state vector.
