@@ -1,0 +1,24 @@
+Logger initialized at 2025-04-14 17:10:41.694362
+[2025-04-14 17:10:41] Episode 0: Reward=23.50 Steps=48 
+[2025-04-14 17:10:41] Episode 1: Reward=15.85 Steps=50 
+[2025-04-14 17:10:42] Episode 2: Reward=16.10 Steps=50 
+[2025-04-14 17:10:42] Episode 3: Reward=9.15 Steps=50 
+[2025-04-14 17:10:42] Episode 4: Reward=15.05 Steps=50 
+[2025-04-14 17:10:42] Episode 5: Reward=10.50 Steps=50 
+[2025-04-14 17:10:42] Episode 6: Reward=11.45 Steps=50 
+[2025-04-14 17:10:42] Episode 7: Reward=5.70 Steps=50 
+[2025-04-14 17:10:42] Episode 8: Reward=18.10 Steps=50 
+[2025-04-14 17:10:42] Episode 9: Reward=12.75 Steps=50 
+[2025-04-14 17:10:42] Episode 10: Reward=9.40 Steps=50 
+[2025-04-14 17:10:42] Episode 11: Reward=9.20 Steps=50 
+[2025-04-14 17:10:42] Episode 12: Reward=12.75 Steps=50 
+[2025-04-14 17:10:42] Episode 13: Reward=7.00 Steps=50 
+[2025-04-14 17:10:42] Episode 14: Reward=11.15 Steps=50 
+[2025-04-14 17:10:42] Episode 15: Reward=10.40 Steps=50 
+[2025-04-14 17:10:42] Episode 16: Reward=24.95 Steps=44 
+[2025-04-14 17:10:42] Episode 17: Reward=13.80 Steps=50 
+[2025-04-14 17:10:42] Episode 18: Reward=14.25 Steps=50 
+[2025-04-14 17:10:42] Episode 19: Reward=26.70 Steps=49 
+[2025-04-14 17:10:42] Evaluation complete. Average reward: 13.89
+[2025-04-14 17:10:42] Average episode length: 49.55
+[2025-04-14 17:10:43] Rewards plot saved to logs/eval_ppo/rewards_plot.png

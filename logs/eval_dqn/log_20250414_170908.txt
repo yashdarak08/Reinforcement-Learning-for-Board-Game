@@ -1,0 +1,24 @@
+Logger initialized at 2025-04-14 17:09:08.314586
+[2025-04-14 17:09:08] Episode 0: Reward=8.45 Steps=60 
+[2025-04-14 17:09:08] Episode 1: Reward=7.50 Steps=60 
+[2025-04-14 17:09:08] Episode 2: Reward=8.40 Steps=60 
+[2025-04-14 17:09:08] Episode 3: Reward=6.10 Steps=60 
+[2025-04-14 17:09:08] Episode 4: Reward=8.10 Steps=60 
+[2025-04-14 17:09:08] Episode 5: Reward=9.20 Steps=60 
+[2025-04-14 17:09:08] Episode 6: Reward=7.50 Steps=60 
+[2025-04-14 17:09:08] Episode 7: Reward=7.90 Steps=60 
+[2025-04-14 17:09:08] Episode 8: Reward=5.50 Steps=60 
+[2025-04-14 17:09:08] Episode 9: Reward=9.60 Steps=60 
+[2025-04-14 17:09:08] Episode 10: Reward=5.40 Steps=60 
+[2025-04-14 17:09:08] Episode 11: Reward=7.90 Steps=60 
+[2025-04-14 17:09:08] Episode 12: Reward=7.90 Steps=60 
+[2025-04-14 17:09:08] Episode 13: Reward=5.60 Steps=60 
+[2025-04-14 17:09:08] Episode 14: Reward=6.20 Steps=60 
+[2025-04-14 17:09:08] Episode 15: Reward=7.80 Steps=60 
+[2025-04-14 17:09:08] Episode 16: Reward=7.90 Steps=60 
+[2025-04-14 17:09:08] Episode 17: Reward=7.50 Steps=60 
+[2025-04-14 17:09:08] Episode 18: Reward=6.60 Steps=60 
+[2025-04-14 17:09:08] Episode 19: Reward=5.70 Steps=60 
+[2025-04-14 17:09:08] Evaluation complete. Average reward: 7.34
+[2025-04-14 17:09:08] Average episode length: 60.00
+[2025-04-14 17:09:08] Rewards plot saved to logs/eval_dqn/rewards_plot.png
